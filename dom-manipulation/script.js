@@ -88,8 +88,8 @@ function createAddQuoteForm() {
   document.body.appendChild(formContainer);
 }
 
-// ✅ ===== Sync Quotes from Server =====
-async function syncQuotes() {
+// ✅ ===== Fetch Quotes from Server =====
+async function fetchQuotesFromServer() {
   try {
     const response = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=5");
     const serverData = await response.json();
@@ -160,5 +160,5 @@ exportBtn.addEventListener("click", exportQuotesToJson);
 loadQuotes();
 populateCategories();
 createAddQuoteForm();
-syncQuotes(); // initial sync
-setInterval(syncQuotes, 30000); // periodic sync every 30s
+fetchQuotesFromServer(); // initial sync
+setInterval(fetchQuotesFromServer, 30000); // periodic sync every 30s
