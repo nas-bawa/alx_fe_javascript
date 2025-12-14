@@ -61,7 +61,7 @@ function addQuote() {
     quotes.push(newQuote);
     saveQuotes();
     populateCategories();
-    syncQuoteToServer(newQuote); // also send to server
+    syncQuoteToServer(newQuote);
     notification.textContent = "Quote added locally and synced to server.";
   } else {
     notification.textContent = "Please enter both quote and category.";
@@ -88,8 +88,8 @@ function createAddQuoteForm() {
   document.body.appendChild(formContainer);
 }
 
-// ===== Server Sync =====
-async function fetchQuotesFromServer() {
+// ✅ ===== Sync Quotes from Server =====
+async function syncQuotes() {
   try {
     const response = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=5");
     const serverData = await response.json();
@@ -97,23 +97,27 @@ async function fetchQuotesFromServer() {
       text: post.body,
       category: "Server"
     }));
+
     // Conflict resolution: server wins
     quotes = [...serverQuotes, ...quotes.filter(q => q.category !== "Server")];
     saveQuotes();
     populateCategories();
-    notification.textContent = "Quotes synced from server (server data took precedence).";
+    notification.textContent = "Quotes synced from server. Server data took precedence.";
   } catch (err) {
-    notification.textContent = "Failed to fetch from server.";
+    notification.textContent = "Failed to sync quotes from server.";
     console.error(err);
   }
 }
 
+// ✅ ===== Sync Quote to Server (POST with Content-Type) =====
 async function syncQuoteToServer(quote) {
   try {
     await fetch("https://jsonplaceholder.typicode.com/posts", {
       method: "POST",
-      body: JSON.stringify(quote),
-      headers: { "Content-type": "application/json; charset=UTF-8" }
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(quote)
     });
     notification.textContent = "Quote synced to server.";
   } catch (err) {
@@ -122,9 +126,8 @@ async function syncQuoteToServer(quote) {
   }
 }
 
-// ===== Event listeners =====
-newQuoteBtn.addEventListener("click", filterQuotes);
-exportBtn.addEventListener("click", () => {
+// ===== Export quotes to JSON =====
+function exportQuotesToJson() {
   const blob = new Blob([JSON.stringify(quotes, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
@@ -134,11 +137,28 @@ exportBtn.addEventListener("click", () => {
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
-});
+}
+
+// ===== Import quotes from JSON =====
+function importFromJsonFile(event) {
+  const fileReader = new FileReader();
+  fileReader.onload = function(e) {
+    const importedQuotes = JSON.parse(e.target.result);
+    quotes.push(...importedQuotes);
+    saveQuotes();
+    populateCategories();
+    notification.textContent = "Quotes imported successfully!";
+  };
+  fileReader.readAsText(event.target.files[0]);
+}
+
+// ===== Event listeners =====
+newQuoteBtn.addEventListener("click", filterQuotes);
+exportBtn.addEventListener("click", exportQuotesToJson);
 
 // ===== Initialize =====
 loadQuotes();
 populateCategories();
 createAddQuoteForm();
-fetchQuotesFromServer(); // initial sync
-setInterval(fetchQuotesFromServer, 30000); // periodic sync every 30s
+syncQuotes(); // initial sync
+setInterval(syncQuotes, 30000); // periodic sync every 30s
