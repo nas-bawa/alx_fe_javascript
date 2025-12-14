@@ -109,6 +109,11 @@ async function fetchQuotesFromServer() {
   }
 }
 
+// ✅ ===== Sync Quotes Wrapper =====
+function syncQuotes() {
+  fetchQuotesFromServer();
+}
+
 // ✅ ===== Sync Quote to Server (POST with Content-Type) =====
 async function syncQuoteToServer(quote) {
   try {
@@ -160,5 +165,5 @@ exportBtn.addEventListener("click", exportQuotesToJson);
 loadQuotes();
 populateCategories();
 createAddQuoteForm();
-fetchQuotesFromServer(); // initial sync
-setInterval(fetchQuotesFromServer, 30000); // periodic sync every 30s
+syncQuotes(); // initial sync
+setInterval(syncQuotes, 30000); // periodic sync every 30s
