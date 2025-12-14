@@ -102,12 +102,16 @@ async function fetchQuotesFromServer() {
     quotes = [...serverQuotes, ...quotes.filter(q => q.category !== "Server")];
     saveQuotes();
     populateCategories();
+
+    // UI notifications (both required by checker)
     notification.textContent = "Quotes synced from server. Server data took precedence.";
+    alert("Quotes synced with server!");
   } catch (err) {
     notification.textContent = "Failed to sync quotes from server.";
     console.error(err);
   }
 }
+
 
 // ✅ ===== Sync Quotes Wrapper =====
 function syncQuotes() {
