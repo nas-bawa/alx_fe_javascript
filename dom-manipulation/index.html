@@ -8,18 +8,21 @@
 <body>
   <h1>Dynamic Quote Generator</h1>
 
-  <!-- Quote display and controls -->
+  <!-- Quote display -->
   <div id="quoteDisplay"></div>
   <button id="newQuote">Show New Quote</button>
 
-  <!-- Category selector -->
+  <!-- Category filter -->
   <div>
-    <label for="categorySelect">Choose Category:</label>
-    <select id="categorySelect"></select>
+    <label for="categoryFilter">Filter by Category:</label>
+    <select id="categoryFilter" onchange="filterQuotes()">
+      <option value="all">All Categories</option>
+      <!-- Dynamically populated categories -->
+    </select>
   </div>
 
-  <!-- Import/Export controls -->
-  <div style="margin-top: 12px;">
+  <!-- Export/Import controls -->
+  <div style="margin-top:12px;">
     <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
     <button id="exportBtn">Export Quotes as JSON</button>
   </div>
